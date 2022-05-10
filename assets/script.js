@@ -1,45 +1,57 @@
-const getCountries = async () => {
-  //je recupere la péponse de l'api pays
-  const url = await fetch("https://restcountries.com/v3.1/all");
-  //je transforme le resultat en JSON
-  const res = await url.json();
-  console.log(res);
-  //pour chaque pays
-  res.forEach((country) => {
-    //je créer sa "fiche"
+let result = document.querySelector("#result");
+
+document.querySelector("#searchCountry").onsubmit = function (e) {
+  document.querySelector("#result").innerHTML = "";
+  e.preventDefault();
+  actionForm(document.querySelector("#country").value);
+};
+
+const actionForm = async (name) => {
+  let url = `https://restcountries.com/v3.1/name/${name}`;
+  let response = await fetch(url);
+  let data = await response.json();
+  console.log(data);
+
+  data.forEach((country) => {
+    const img = document.createElement("img");
+    img.src = `${country.flags.png}`;
+    img.classList.add("rounded");
+    img.style = "border: 1px solid black; width: 10vw";
     const p = document.createElement("p");
-    //si le pays ne possede pas de capitale "j'adapte" sa fiche en retirant sa capitale
-    if (country.capital) {
-      p.innerHTML =
-        `<img src="${country.flags.png}" width="250px" border="1px solid black"></img>` +
-        `</br>` +
-        `${country.name.common} :` +
-        `</br>` +
-        `Population : ${country.population} habitants` +
-        `</br>` +
-        `Capitale : ${country.capital[0]}` +
-        `</br>` +
-        `Nom français : ${country.translations.fra.common}` +
-        `</br>` +
-        `</br>`;
-    } else {
-      p.innerHTML =
-        `<img src="${country.flags.png}" width="250px" border="1px solid black"></img>` +
-        `</br>` +
-        `${country.name.common} :` +
-        `</br>` +
-        `Population : ${country.population} habitants` +
-        `</br>` +
-        `Capitale : pas de capitale` +
-        `</br>` +
-        `Nom français : ${country.translations.fra.common}` +
-        `</br>` +
-        `</br>`;
+    p.classList.add("mb-2", "fs-2", "fw-bold");
+    const p2 = document.createElement("p");
+    p2.classList.add("mt-2");
+    const p3 = document.createElement("p");
+    p3.classList.add("mx-auto");
+    p3.style = "border: 1px solid black; width: 10vw";
+    let lstLng = [];
+    for (lang in country.languages) {
+      lstLng.push(country.languages[lang]);
     }
-    //j'ajoute "la fiche" au body
-    document.querySelector("body").appendChild(p);
+    let lstCur = [];
+    for (currencie in country.currencies) {
+      lstCur.push(country.currencies[currencie]);
+    }
+    const p4 = document.createElement("p");
+    lstCur.forEach((cur) => {
+      if (country.capital) {
+        p.innerHTML = `${country.name.common}`;
+        p2.innerHTML = `Capitale : ${country.capital[0]}  <br/>  Habitants : ${
+          country.population
+        } <br/> Nom en francais : ${country.translations.fra.official}
+                <br/> Superficie : ${
+                  country.area
+                } km² <br/> Langues : ${lstLng.join(", ")} <br/> Monnaie : 
+                ${cur["name"]} <br/> Symbole : ${cur["symbol"]}`;
+      } else {
+        p.textContent = `${country.name.common} - Pas de capitale`;
+      }
+    });
+    result.appendChild(p);
+    result.appendChild(img);
+    result.appendChild(p2);
+    result.appendChild(p4);
+    result.appendChild(p3);
     console.log(country);
   });
 };
-
-getCountries();

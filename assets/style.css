@@ -1,0 +1,12 @@
+button {
+  width: 25%;
+}
+
+#country {
+  width: 50%;
+  text-transform: uppercase;
+}
+
+#container {
+  padding-bottom: 3rem;
+}
